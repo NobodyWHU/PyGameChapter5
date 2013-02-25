@@ -66,7 +66,7 @@ def main():
         drawButtons()
 
         scoreSurf=BASICFONT.render('Score:'+str(score), 1, WHITE)
-        scoreRect=scoreRect.get_rect()
+        scoreRect=scoreSurf.get_rect()
         scoreRect.topleft=(WINDOWWIDTH-100, 10)
         DISPLAYSURF.blit(infoSurf, infoRect)
 
@@ -164,4 +164,68 @@ def flashButtonAnimation(color, animationSpeed=50):
             pygame.display.update()
             FPSCLOCK.tick(FPS)
     DISPLAYSURF.blit(origSurf, (0, 0))
-    
+
+def drawButtons():
+    pygame.draw.rect(DISPLAYSURF, YELLOW, YELLOWRECT)
+    pygame.draw.rect(DISPLAYSURF, BLUE, BLUERECT)
+    pygame.draw.rect(DISPLAYSURF, RED, REDRECT)
+    pygame.draw.rect(DISPLAYSURF, GREEN, GREENRECT)
+
+def changeBackgroundAnimation(animationSpeed=40):
+    global bgColor
+    newBgColor=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+    newBgSurf=pygame.Surface((WINDOWWIDTH, WINDOWHEIGHT))
+    newBgSurf=newBgSurf.convert_alpha()
+    r, g, b=newBgColor
+    for alpha in range(0, 255, animationSpeed): #animation loop
+        checkForQuit()
+        DISPLAYSURF.fill(bgColor)
+
+        newBgSurf.fill((r, g, b, alpha))
+        DISPLAYSURF.blit(newBgSurf, (0, 0))
+
+        drawButtons()  #redraw the buttons on the top of the tint
+
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+    bgColor=newBgColor
+
+def gameOverAnimation(color=WHITE, animationSpeed=50):
+    #play all beeps at once, then flash the background
+    origSurf=DISPLAYSURF.copy()
+    flashSurf=pygame.Surface(DISPLAYSURF.get_size())
+    flashSurf=flashSurf.convert_alpha()
+    BEEP1.play()
+    BEEP2.play()
+    BEEP3.play()
+    BEEP4.play()
+    r, g, b=color
+    for i in range(3):  #do the flash 3 times
+        for start, end, step in ((0, 255, 1), (255, 0, -1)):
+            #The first iteration in this loop sets the following for loop
+            #to go from 0 to 255, the second from 255 to 0
+            for alpha in range(start, end, animationSpeed*step):
+                #alpha means transparency.255 is opaque, 0 is invisble
+                checkForQuit()
+                flashSurf.fill((r, g, b, alpha))
+                DISPLAYSURF.blit(origSurf, (0, 0))
+                DISPLAYSURF.blit(flashSurf, (0, 0))
+                drawButtons()
+                pygame.display.update()
+                FPSCLOCK.tick(FPS)
+
+def getButtonClicked(x, y):
+    if YELLOWRECT.collidepoint((x, y)):
+        return YELLOW
+    elif BLUERECT.collidepoint((x, y)):
+        return BLUE
+    elif REDRECT.collidepoint((x, y)):
+        return RED
+    elif GREENRECT.collidepoint((x, y)):
+        return GREEN
+    return None
+
+if __name__=="__main__":
+    main()
+
