@@ -134,6 +134,9 @@ def checkForQuit():
         pygame.event.post(event)
 
 def flashButtonAnimation(color, animationSpeed=50):
+    """
+    :type : object
+    """
     if color==YELLOW:
         sound=BEEP1
         flashColor=BRIGHTYELLOW
